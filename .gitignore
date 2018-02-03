@@ -3,3 +3,4 @@ app/include/
 app/lib/
 app/local/
 app/pip-selfcheck.json
+.idea/
