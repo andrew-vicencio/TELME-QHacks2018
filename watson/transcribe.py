@@ -110,7 +110,7 @@ def on_message(self, msg):
         if data["results"][0]["final"]:
             FINALS.append(data)
         # This prints out the current fragment that we are working on
-        print(data['results'][0]['alternatives'][0]['transcript'])
+        #print(data['results'][0]['alternatives'][0]['transcript'])
 
 
 def on_error(self, error):
