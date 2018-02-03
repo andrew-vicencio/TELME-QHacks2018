@@ -1,7 +1,0 @@
-app/bin/
-app/include/
-app/lib/
-app/local/
-app/pip-selfcheck.json
-.idea/
-watson/speech.cfg
