@@ -20,6 +20,7 @@ import configparser
 import json
 import threading
 import time
+from analyze_tone import analyze
 
 import pyaudio
 import websocket
@@ -64,14 +65,12 @@ def read_audio(ws, timeout):
                     frames_per_buffer=CHUNK)
 
     print("* recording")
-    print(RECORD_SECONDS)
-    print(timeout)
     rec = timeout or RECORD_SECONDS
-    print(rec)
+
 
     for i in range(0, int(RATE / CHUNK * rec)):
     #while()
-        data = stream.read(CHUNK)
+        data = stream.read(CHUNK, exception_on_overflow = False)
         # print("Sending packet... %d" % i)
         # NOTE(sdague): we're sending raw binary in the stream, we
         # need to indicate that otherwise the stream service
@@ -123,6 +122,8 @@ def on_close(ws):
     transcript = "".join([x['results'][0]['alternatives'][0]['transcript']
                           for x in FINALS])
     print(transcript)
+    analyze(transcript)
+
 
 
 def on_open(ws):
