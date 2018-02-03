@@ -6,3 +6,4 @@ app/pip-selfcheck.json
 .idea/
 watson/speech.cfg
 app/venv/
+watson/venv/
