@@ -64,10 +64,7 @@ def read_audio(ws, timeout):
                     frames_per_buffer=CHUNK)
 
     print("* recording")
-    print(RECORD_SECONDS)
-    print(timeout)
     rec = timeout or RECORD_SECONDS
-    print(rec)
 
     for i in range(0, int(RATE / CHUNK * rec)):
     #while()
@@ -110,7 +107,7 @@ def on_message(self, msg):
         if data["results"][0]["final"]:
             FINALS.append(data)
         # This prints out the current fragment that we are working on
-        print(data['results'][0]['alternatives'][0]['transcript'])
+        #print(data['results'][0]['alternatives'][0]['transcript'])
 
 
 def on_error(self, error):
