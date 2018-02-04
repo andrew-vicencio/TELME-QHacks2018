@@ -12,16 +12,17 @@ STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
 
 // Audio Buffer Constants
 #define AB_SIZE 1024
-#define AB_BUFS 16
+#define AB_SEND 50
+#define AB_BUFS 5
 
-#define SR 16000
+#define SR 32000
 
-#define TI 20000
+#define TI 50000
 
 IntervalTimer T;
 
 void rec();
-void lvl(int);
+//void lvl(int);
 void blink();
 void start();
 
@@ -30,7 +31,7 @@ byte host[] = { 138, 197, 152, 152 };
 int port = 2000;
 
 byte ab[AB_BUFS][AB_SIZE];
-uint16_t x, y;
+uint16_t x, y, z;
 
 unsigned long ref;
 
@@ -53,23 +54,12 @@ void setup() {
 }
 
 void loop() {
-    /*
+/*
     delay(4);
     lvl(analogRead(A0));
     return;
-    */
-    delay(500);
-    for(int i=0; i<state; i++) {
-        digitalWrite(D0, HIGH);
-        delay(500);
-        digitalWrite(D0, LOW);
-        delay(500);
-    }
+*/
     
-    digitalWrite(D0, HIGH);
-    delay(1000);
-    digitalWrite(D0, LOW);
-        
     switch(state) {
         case 0:
             x = y = 0;
@@ -94,14 +84,14 @@ void loop() {
             break;
         case 4:
             if(x >= AB_SIZE) {
-                if(y < AB_BUFS)
-                    cc.write(ab[y++], AB_SIZE);
+                if(y < AB_SEND)
+                    cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
                 else
                     state++;
                 x = 0;
             }
             else if(millis() - ref >= TI) {
-                cc.write(ab[y], x);
+                cc.write(ab[y%AB_BUFS], x);
                 state++;
             }
             break;
@@ -119,9 +109,25 @@ void start() {
 }
 
 void rec() {
-    if(y < AB_BUFS && x < AB_SIZE) {
-        ab[y][x] = (uint8_t) (analogRead(A0)>>2);
-        lvl(ab[y][x++]<<2);
+    if(y < AB_SEND && x < AB_SIZE) {
+        byte a = analogRead(A0);
+        //lvl(a);
+        ab[y%AB_BUFS][x++] = (uint8_t) a>>2;
+        
+        digitalWrite(D0, HIGH);
+        int hl = 0;
+        if(a > 500) hl |= 1;
+        if(a > 600) hl |= 2;
+        if(a > 700) hl |= 4;
+        if(a > 800) hl |= 8;
+        if(a > 900) hl |= 16;
+        
+        digitalWrite(B0, hl&1 ? HIGH : LOW);
+        digitalWrite(B1, hl&2 ? HIGH : LOW);
+        digitalWrite(B2, hl&4 ? HIGH : LOW);
+        digitalWrite(B3, hl&8 ? HIGH : LOW);
+        digitalWrite(B4, hl&16 ? HIGH : LOW);
+        digitalWrite(D0, LOW);
     }
 }
 
@@ -159,9 +165,10 @@ void loop () {
 }
 */
 
+/*
 void lvl(int l) {
+    digitalWrite(D0, HIGH);
     int hl = 0;
-    Serial.println(l);
     if(l > 500) hl |= 1;
     if(l > 600) hl |= 2;
     if(l > 700) hl |= 4;
@@ -173,6 +180,7 @@ void lvl(int l) {
     digitalWrite(B2, hl&4 ? HIGH : LOW);
     digitalWrite(B3, hl&8 ? HIGH : LOW);
     digitalWrite(B4, hl&16 ? HIGH : LOW);
+    digitalWrite(D0, LOW);
 }
 
 void blink() {
@@ -181,3 +189,4 @@ void blink() {
     digitalWrite(D7, LOW);
     delay(1000);
 }
+*/
