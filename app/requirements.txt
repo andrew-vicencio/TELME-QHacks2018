@@ -1,4 +1,5 @@
 aiohttp==2.3.10
+aiohttp-jinja2==0.15.0
 async-timeout==2.0.0
 chardet==3.0.4
 gevent==1.2.2
