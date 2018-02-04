@@ -5,3 +5,6 @@ app/local/
 app/pip-selfcheck.json
 .idea/
 watson/speech.cfg
+app/.venv/
+watson/.venv/
+watson/credentials.py
