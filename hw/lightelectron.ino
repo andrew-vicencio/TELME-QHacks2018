@@ -3,6 +3,8 @@
 
 #include "sample.h"
 
+#define LEN 512
+
 void start(); void level(int);
 
 STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
@@ -43,20 +45,24 @@ void loop() {
             break;
         case 2:
             digitalWrite(D7, HIGH);
-            byte buf[1024];
+            cc.write(sample_wav, sample_wav_len);
+            /*
+            byte buf[LEN];
             long r;
-            for(int i=0; i<44; i++) {
+            for(int i=0; i<(sample_wav_len/LEN); i++) {
                 digitalWrite(D0, HIGH);
-                for(int j=0; j<1024; j++) {
-                    Serial.println((i*1024)+j);
-                    buf[j] = sample_wav[(i*1024)+j];
+                for(int j=0; j<LEN && (i*LEN)+j<sample_wav_len; j++) {
+                    Serial.println((i*LEN)+j);
+                    buf[j] = sample_wav[(i*LEN)+j];
                     level(buf[j]);
                     r = j;
-                    delay(25);
+                    delay(2);
                 }
-                cc.write(buf, r);
+                level((uint8_t)0);
+                //cc.write(buf, r);
                 digitalWrite(D0, LOW);
             }
+            */
             cc.stop();
             digitalWrite(D7, LOW);
             state = 0;
@@ -71,11 +77,11 @@ void start() {
 
 void level(uint8_t l) {
     int hl = 0;
-    if(l > 0x10) hl |= 1;
-    if(l > 0x20) hl |= 2;
-    if(l > 0x40) hl |= 4;
-    if(l > 0x80) hl |= 8;
-    if(l > 0xA0) hl |= 16;
+    if(l > 0x00) hl |= 1;
+    if(l > 0x40) hl |= 2;
+    if(l > 0x80) hl |= 4;
+    if(l > 0xC0) hl |= 8;
+    if(l > 0xF0) hl |= 16;
     
     digitalWrite(B0, hl&1 ? HIGH : LOW);
     digitalWrite(B1, hl&2 ? HIGH : LOW);
