@@ -11,22 +11,25 @@
 STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
 
 // Audio Buffer Constants
-#define AB_SIZE 512
+#define AB_SIZE 1024
 #define AB_BUFS 16
 
-#define SR 8000
+#define SR 16000
+
+#define TI 20000
 
 IntervalTimer T;
 
-byte rec();
-void blink();
+void rec();
 void lvl(int);
+void blink();
+void start();
 
 TCPClient cc;
-byte srv[] = { 138, 197, 152, 152 };
-int pt = 2000;
+byte host[] = { 138, 197, 152, 152 };
+int port = 2000;
 
-uint16_t ab[AB_BUFS][AB_SIZE];
+byte ab[AB_BUFS][AB_SIZE];
 uint16_t x, y;
 
 unsigned long ref;
@@ -42,40 +45,91 @@ void setup() {
     pinMode(B2, OUTPUT);
     pinMode(B3, OUTPUT);
     pinMode(B4, OUTPUT);
+    pinMode(D0, OUTPUT);
 	pinMode(D7, OUTPUT);
+    pinMode(C0, INPUT);
+    
+    attachInterrupt(C0, start, CHANGE);
 }
 
 void loop() {
+    /*
     delay(4);
     lvl(analogRead(A0));
+    return;
+    */
+    delay(500);
+    for(int i=0; i<state; i++) {
+        digitalWrite(D0, HIGH);
+        delay(500);
+        digitalWrite(D0, LOW);
+        delay(500);
+    }
     
+    digitalWrite(D0, HIGH);
+    delay(1000);
+    digitalWrite(D0, LOW);
+        
     switch(state) {
         case 0:
+            x = y = 0;
             for(int i=0; i<AB_BUFS; i++)
                 for(int j=0; j<AB_SIZE; j++)
                     ab[i][j] = 0;
+            state++;
             break;
         case 1:
-            T.begin(rec, 1000000 / SP, uSec);
-            ref = millis();
             break;
         case 2:
-            if(x < AB_SIZE) {
-                
-            }
+            if(cc.connect(host, port))
+                state++;
+            else
+                delay(5000);
+            break;
         case 3:
+            digitalWrite(D7, HIGH);
+            T.begin(rec, 1000000 / SR, uSec);
+            ref = millis();
+            state++;
+            break;
+        case 4:
+            if(x >= AB_SIZE) {
+                if(y < AB_BUFS)
+                    cc.write(ab[y++], AB_SIZE);
+                else
+                    state++;
+                x = 0;
+            }
+            else if(millis() - ref >= TI) {
+                cc.write(ab[y], x);
+                state++;
+            }
+            break;
+        case 5:
+            T.end();
+            cc.stop();
+            digitalWrite(D7, LOW);
+            break;
     }
 }
 
-byte rec() {
-    return (uint8_t) analogRead(A0);
+void start() {
+    if(state == 1)
+        state++;
+}
+
+void rec() {
+    if(y < AB_BUFS && x < AB_SIZE) {
+        ab[y][x] = (uint8_t) (analogRead(A0)>>2);
+        lvl(ab[y][x++]<<2);
+    }
 }
 
 /*
 void loop () {
     int e = 0;
     for(int i=1; i<127; i++) {
-        Wire.beginTransmission(i);
+        WirebeginTransmission(i);
         e = Wire.endTransmission();
         
         f(!e) {
