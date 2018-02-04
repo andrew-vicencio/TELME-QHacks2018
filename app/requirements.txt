@@ -1,5 +1,4 @@
 aiohttp==2.3.10
-aiohttp-jinja2==0.15.0
 async-timeout==2.0.0
 chardet==3.0.4
 gevent==1.2.2
@@ -15,3 +14,4 @@ pytz==2017.3
 six==1.11.0
 websocket==0.2.1
 yarl==1.1.0
+speech-to-text==0.1.0
