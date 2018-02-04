@@ -14,10 +14,10 @@
       <file leaf-file-name="server_app.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server_app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="30" column="35" lean-forward="false" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+            <state relative-caret-position="90">
+              <caret line="148" column="32" lean-forward="true" selection-start-line="148" selection-start-column="32" selection-end-line="148" selection-end-column="32" />
               <folding>
-                <element signature="e#0#23#0" expanded="true" />
+                <element signature="e#0#37#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -39,8 +39,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="109" />
-    <option name="y" value="223" />
+    <option name="x" value="88" />
+    <option name="y" value="173" />
     <option name="width" value="1154" />
     <option name="height" value="459" />
   </component>
@@ -104,7 +104,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="109" y="223" width="1154" height="459" extended-state="0" />
+    <frame x="88" y="173" width="1154" height="459" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2270364" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -149,10 +149,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server_app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="30" column="35" lean-forward="false" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+        <state relative-caret-position="90">
+          <caret line="148" column="32" lean-forward="true" selection-start-line="148" selection-start-column="32" selection-end-line="148" selection-end-column="32" />
           <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#37#0" expanded="true" />
           </folding>
         </state>
       </provider>
