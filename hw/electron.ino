@@ -8,16 +8,14 @@
 #include "cellular_hal.h"
 #include "spk.h"
 
-#include "sample.h"
-
 STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
 
 // Audio Buffer Constants
-#define AB_SIZE 2
-#define AB_SEND 2
-#define AB_BUFS 2
+const unsigned long AB_SIZE = 64000;
+#define AB_SEND 1
+#define AB_BUFS 1
 
-#define SR 8000
+#define SR 16000
 #define TI 100000
 
 IntervalTimer T;
@@ -31,7 +29,7 @@ TCPClient cc;
 byte host[] = { 138, 197, 152, 152 };
 int port = 2000;
 
-byte ab[AB_BUFS][AB_SIZE];
+byte ab[AB_SIZE];
 unsigned long x, y, z;
 
 unsigned long ref;
@@ -60,15 +58,21 @@ void loop() {
     
     switch(state) {
         case 0:
+            digitalWrite(B0, LOW);
+            digitalWrite(B1, LOW);
+            digitalWrite(B2, LOW);
+            digitalWrite(B3, LOW);
+            digitalWrite(B4, LOW);
+            digitalWrite(D0, HIGH);
             x = y = 0;
-            for(int i=0; i<AB_BUFS; i++)
-                for(int j=0; j<AB_SIZE; j++)
-                    ab[i][j] = 0;
+            for(int i=0; i<AB_SIZE; i++)
+                ab[i] = 0;
             state++;
             break;
         case 1:
             break;
         case 2:
+            digitalWrite(D0, LOW);
             if(cc.connect(host, port))
                 state++;
             else
@@ -76,47 +80,26 @@ void loop() {
             break;
         case 3:
             digitalWrite(D7, HIGH);
-            //T.begin(rec, 1000000 / SR, uSec);
+            T.begin(rec, 1000000 / SR, uSec);
             
-            byte buf[2048];
-            for(int i=0; i<315; i++) {
-                digitalWrite(D0, HIGH);
-                for(int j=0; j<2048 /*&& ((i<<11)+j)<sample_len*/; j++)
-                    buf[j] = sample[i];
-                cc.write(buf, 2048);
-                digitalWrite(D0, LOW);
-            }
-            /*
-            for(int y = 0; y < AB_SEND; y++) {
-                digitalWrite(D0, HIGH);
-                for(int x = 0; x < AB_SIZE; x++) {
-                    ab[y%AB_BUFS][x] = analogRead(A0);
-                }
-                digitalWrite(D0, LOW);
-                cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
-            }
-            */
-            state = 4;
             ref = millis();
             state++;
             break;
         case 4:
             if(x >= AB_SIZE) {
                 digitalWrite(D0, HIGH);
-                if(y < AB_SEND)
-                    cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
-                else
-                    state++;
-                x = 0;
+                cc.write(ab, AB_SIZE);
                 digitalWrite(D0, LOW);
-            }
-            else if(millis() - ref >= TI) {
-                cc.write(ab[y%AB_BUFS], x);
                 state++;
             }
+            else if(millis() - ref >= TI) {
+                cc.write(ab, x);
+                state++;
+            }
+            delay(1);
             break;
         case 5:
-            //T.end();
+            T.end();
             cc.stop();
             digitalWrite(D7, LOW);
             state = 0;
@@ -130,17 +113,16 @@ void start() {
 }
 
 void rec() {
-    if(y < AB_SEND && x < AB_SIZE) {
+    if(x < AB_SIZE) {
         byte a = analogRead(A0);
-        //lvl(a);
-        ab[y%AB_BUFS][x++] = (uint8_t) a>>2;
+        ab[x++] = a;
         
         int hl = 0;
-        if(a > 500) hl |= 1;
-        if(a > 600) hl |= 2;
-        if(a > 700) hl |= 4;
-        if(a > 800) hl |= 8;
-        if(a > 900) hl |= 16;
+        if(a > 0x00) hl |= 1;
+        if(a > 0x40) hl |= 2;
+        if(a > 0x80) hl |= 4;
+        if(a > 0xC0) hl |= 8;
+        if(a > 0xF0) hl |= 16;
         
         digitalWrite(B0, hl&1 ? HIGH : LOW);
         digitalWrite(B1, hl&2 ? HIGH : LOW);
