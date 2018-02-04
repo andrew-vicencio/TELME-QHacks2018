@@ -6,8 +6,8 @@ import credentials
 from analyze_tone import analyze
 
 speech_to_text = SpeechToTextV1(
-    username = credentials.login['username-speech'],
-    password = credentials.login['password-speech'],
+    username = "4c20aefe-d09b-448d-a30a-f4fed6ef1bb8",
+    password = "tvZZ6pF6ASrj",
     x_watson_learning_opt_out=False
 )
 
