@@ -1,7 +1,13 @@
 from aiohttp import web
 import socketio
-#import websocket
+from pymongo import MongoClient
+import json
+from bson.json_util import loads,dumps
 
+URI = 'mongodb://admin:qhacks2018@ds225078.mlab.com:25078/convodb'
+client = MongoClient(URI)
+#import websocket
+db = client['convodb']
 
 CHUNK = 1024
 CHANNELS = 1
@@ -12,14 +18,18 @@ RATE = 44100
 
 
 
+
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 sio.attach(app)
 
 
 async def handle(request):
-    return web.Response(text="Hello World")
-
+    await insert_to_database()
+    result = await read_from_database()
+    result = dumps(result)
+    return web.Response(text=result)
+    #return web.Response(text=json.dumps(result))
 
 
 
@@ -27,8 +37,16 @@ async def handle(request):
 #@sio.on('dataFomMicro')
 #async def getDataFromMicro(request):
 
+async def insert_to_database():
+    textCollection = db['Text']
+    sampleText = {"Brendan":"Is Sick"}
+    textCollection.insert_one(sampleText)
 
-
+async def read_from_database():
+    textCollection = db['Text']
+    result = textCollection.find_one()
+    print(result)
+    return result
 
 @sio.on('data')
 def print_data(request):
