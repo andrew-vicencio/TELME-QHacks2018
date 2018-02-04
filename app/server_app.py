@@ -27,8 +27,6 @@ RATE = 44100
 #session = aiohttp.ClientSession.ws_connect(wsURI)
 
 
-
-
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
 aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(''))
@@ -43,7 +41,6 @@ async def handle(request):
     #await delete_from_database()
     return web.Response(text=result)
     #return web.Response(text=json.dumps(result))
-
 
 
 #microcontroller emits event called dataFromMicro
@@ -96,17 +93,19 @@ def analyze_tone(text):
         return r.text
     except:
         return False
- 
-def display_results(data, syl_sec):
-    array=[]
+
+def display_results(data, syl_min):
+    data_dict={}
+    data_dict["syl"]=syl_min
     data = json.loads(str(data))
     #print(data)
-    array.append(syl_sec)
+    array['Syl']=syl_sec
     for i in data['document_tone']['tone_categories']:
 
         for j in i['tones']:
-            array.append({"tone_name":j['tone_name'],"score":(str(round(j['score'] * 100,1)))})
-    return array
+            data_dict[j['tone_name']]=(str(round(j['score'],1)))
+    return data_dict
+
 def analyze(data, sec):
     
     if len(data) >= 1:
@@ -123,8 +122,15 @@ def analyze(data, sec):
         results = analyze_tone(data)
         if results != False:
             #display_results(results)
+
             db['Analysis'].insert_one(loads(results))
-            return display_results(results, syl_sec)
+
+
+            res= display_results(results, syl_sec)
+            
+            res['Final']=(final_score(res))
+            return res		
+
             #exit
         else:
             print("Something went wrong")
@@ -147,6 +153,22 @@ def syllables(word):
     if count == 0:
         count +=1
     return count
+    
+def final_score(res):
+	per_point=5
+	score=(1-abs((res['syl']/240)-1))*5*per_point
+	score+=per_point*(1-float(res['Sadness']))
+	score+=2*per_point*(1-float(res['Disgust']))
+	score+=2*per_point*(1-float(res['Tentative']))
+	score+=per_point*float(res['Joy'])
+	score+=per_point*float(res['Analytical'])
+	score+=3*per_point*float(res['Confident'])
+	score+=1*per_point*float(res['Conscientiousness'])
+	score+=1*per_point*float(res['Agreeableness'])
+	score+=2*per_point*float(res['Extraversion'])
+	score+=1*per_point*float(res['Emotional Range'])
+
+	return int(score)
 
 
 async def get_dataText(request):
