@@ -41,7 +41,7 @@ RECORD_SECONDS = 5
 FINALS = []
 
 
-def read_audio(ws, timeout):
+def read_audio(ws, timeout, device):
     """Read audio and sent it to the websocket port.
 
     This uses pyaudio to read from a device in chunks and send these
@@ -53,11 +53,17 @@ def read_audio(ws, timeout):
     # NOTE(sdague): if you don't seem to be getting anything off of
     # this you might need to specify:
     #
-    #    input_device_index=N,
+    
     #
     # Where N is an int. You'll need to do a dump of your input
     # devices to figure out which one you want.
-    RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
+    print(p.get_device_count())
+    if(device!=-1):
+        print("Given")
+        RATE = int(p.get_device_info_by_index(device)['defaultSampleRate'])
+    else:
+        print("Defualt")
+        RATE = int(p.get_default_input_device_info()['defaultSampleRate'])
     stream = p.open(format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,
@@ -109,7 +115,7 @@ def on_message(self, msg):
         if data["results"][0]["final"]:
             FINALS.append(data)
         # This prints out the current fragment that we are working on
-        #print(data['results'][0]['alternatives'][0]['transcript'])
+        print(data['results'][0]['alternatives'][0]['transcript'])
 
 
 def on_error(self, error):
@@ -149,7 +155,7 @@ def on_open(ws):
     # Spin off a dedicated thread where we are going to read and
     # stream out audio.
     threading.Thread(target=read_audio,
-                     args=(ws, args.timeout)).start()
+                     args=(ws, args.timeout, args.device)).start()
 
 
 def get_auth():
@@ -164,7 +170,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Transcribe Watson text in real time')
     parser.add_argument('-t', '--timeout', type=int, default=5)
-    # parser.add_argument('-d', '--device')
+    parser.add_argument('-d', '--device', type=int, default=-1)
     # parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
     return args
