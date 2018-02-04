@@ -43,10 +43,8 @@ FINALS = []
 
 def read_audio(ws, timeout, device):
     """Read audio and sent it to the websocket port.
-
     This uses pyaudio to read from a device in chunks and send these
     over the websocket wire.
-
     """
     global RATE
     p = pyaudio.PyAudio()
@@ -102,7 +100,6 @@ def read_audio(ws, timeout, device):
 
 def on_message(self, msg):
     """Print whatever messages come in.
-
     While we are processing any non trivial stream of speech Watson
     will start chunking results into bits of transcripts that it
     considers "final", and start on a new stretch. It's not always
