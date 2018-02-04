@@ -53,5 +53,5 @@ def analyze(data):
             exit
         else:
             print("Something went wrong")
- 
+    else: print("No data was recieved")
 #main()
