@@ -15,14 +15,13 @@ STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
 #define AB_SEND 50
 #define AB_BUFS 5
 
-#define SR 32000
-
-#define TI 50000
+#define SR 8000
+#define TI 100000
 
 IntervalTimer T;
 
 void rec();
-//void lvl(int);
+void lvl(int);
 void blink();
 void start();
 
@@ -31,7 +30,7 @@ byte host[] = { 138, 197, 152, 152 };
 int port = 2000;
 
 byte ab[AB_BUFS][AB_SIZE];
-uint16_t x, y, z;
+unsigned long x, y, z;
 
 unsigned long ref;
 
@@ -54,11 +53,8 @@ void setup() {
 }
 
 void loop() {
-/*
-    delay(4);
-    lvl(analogRead(A0));
-    return;
-*/
+    //lvl(analogRead(A0));
+    //return;
     
     switch(state) {
         case 0:
@@ -79,16 +75,28 @@ void loop() {
         case 3:
             digitalWrite(D7, HIGH);
             T.begin(rec, 1000000 / SR, uSec);
+/*
+            for(int y = 0; y < AB_SEND; y++) {
+                digitalWrite(D0, HIGH);
+                for(int x = 0; x < AB_SIZE; x++) {
+                    ab[y%AB_BUFS][x] = analogRead(A0);
+                }
+                digitalWrite(D0, LOW);
+                cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
+            }
+*/
             ref = millis();
             state++;
             break;
         case 4:
             if(x >= AB_SIZE) {
+                digitalWrite(D0, HIGH);
                 if(y < AB_SEND)
                     cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
                 else
                     state++;
                 x = 0;
+                digitalWrite(D0, LOW);
             }
             else if(millis() - ref >= TI) {
                 cc.write(ab[y%AB_BUFS], x);
@@ -99,6 +107,7 @@ void loop() {
             T.end();
             cc.stop();
             digitalWrite(D7, LOW);
+            state = 0;
             break;
     }
 }
@@ -114,7 +123,6 @@ void rec() {
         //lvl(a);
         ab[y%AB_BUFS][x++] = (uint8_t) a>>2;
         
-        digitalWrite(D0, HIGH);
         int hl = 0;
         if(a > 500) hl |= 1;
         if(a > 600) hl |= 2;
@@ -127,7 +135,6 @@ void rec() {
         digitalWrite(B2, hl&4 ? HIGH : LOW);
         digitalWrite(B3, hl&8 ? HIGH : LOW);
         digitalWrite(B4, hl&16 ? HIGH : LOW);
-        digitalWrite(D0, LOW);
     }
 }
 
