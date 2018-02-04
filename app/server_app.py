@@ -28,6 +28,7 @@ async def handle(request):
     await insert_to_database()
     result = await read_from_database()
     result = dumps(result)
+    await delete_from_database()
     return web.Response(text=result)
     #return web.Response(text=json.dumps(result))
 
@@ -47,6 +48,10 @@ async def read_from_database():
     result = textCollection.find_one()
     print(result)
     return result
+
+async def delete_from_database():
+    db['Text'].delete_many({})
+
 
 @sio.on('data')
 def print_data(request):
