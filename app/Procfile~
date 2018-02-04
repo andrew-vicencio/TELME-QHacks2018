@@ -1,1 +1,1 @@
-web: gunicorn server_app:app --bind localhost:8080 --worker-class aiohttp.GunicornUVLoopWebWorker
+web: gunicorn server_app:app --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker
