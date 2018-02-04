@@ -79,7 +79,8 @@ def speech_to_text(path):
     json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'],sec )
     print(json_analysis)
     #Send to server
-    db['Text'].insert_one(json_analysis)
+    db['Text'].insert_one(json_text)
+
 
 def analyze_tone(text):
     usern = '66f34122-cf4e-408f-ac88-743a2e60f699'
@@ -115,13 +116,14 @@ def analyze(data, sec):
         test=data.split()
         for word in test:
             num_syl+=syllables(word)
+        if(sec==0):
+            sec=1
         syl_sec=(num_syl*60)/sec
 
         results = analyze_tone(data)
         if results != False:
-
-            db['Conversations'].insert_one(results)
             #display_results(results)
+            db['Analysis'].insert_one(loads(results))
             return display_results(results, syl_sec)
             #exit
         else:
@@ -173,7 +175,10 @@ async def home(request):
 
     return response
 
+async def testRoute(request):
+    speech_to_text('res/sample.wav')
 
+    return web.Response()
 
 @sio.on('dataStream')
 def print_data(request):
@@ -183,6 +188,7 @@ def print_data(request):
 app.router.add_get('/',home)
 app.router.add_get('/getDataText',get_dataText)
 app.router.add_get('/getDataAnalysis',get_dataAnal)
+app.router.add_get('/testRoute',testRoute)
 
 if __name__ =='__main__':
     web.run_app(app)
