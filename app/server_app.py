@@ -171,7 +171,7 @@ def print_data(request):
 
 app.router.add_get('/',handle)
 app.router.add_get('/getDataText',get_dataText)
-
+app.router.add_get('/getDataAnalysis',get_dataAnal)
 
 if __name__ =='__main__':
     web.run_app(app)
