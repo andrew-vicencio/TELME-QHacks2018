@@ -161,16 +161,20 @@ def final_score(res):
 
 
 async def get_dataText(request):
+    print("we here bois")
     textCollection = db['Text']
-    result = textCollection.find_one()
+    result = await textCollection.find_one()
     result = dumps(result)
+    print(result)
     return web.Response(text=result)
 
 
 async def get_dataAnal(request):
+    print("we here bois")
     analysisCollection = db['Analysis']
-    result = analysisCollection.find_one()
+    result = await analysisCollection.find_one()
     result = dumps(result)
+    print(result)
     return web.Response(text=result)
 
 async def home(request):
