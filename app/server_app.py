@@ -162,7 +162,7 @@ async def get_dataAnal(request):
 
 async def home(request):
     context ={}
-    response = aiohttp_jinja2.render_template("home.html",request,context)
+    response = aiohttp_jinja2.render_template("/website/home.html",request,context)
     response.headers['Content-Language']='en'
     return response
 
@@ -173,7 +173,7 @@ def print_data(request):
 
     print(request.data)
 
-app.router.add_get('/',handle)
+app.router.add_get('/',home)
 app.router.add_get('/getDataText',get_dataText)
 app.router.add_get('/getDataAnalysis',get_dataAnal)
 
