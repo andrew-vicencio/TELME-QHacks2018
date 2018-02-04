@@ -2,6 +2,7 @@ from __future__ import print_function
 from aiohttp import web
 import socketio
 from pymongo import MongoClient
+import json
 from bson.json_util import loads,dumps
 import aiohttp_jinja2
 
@@ -9,7 +10,7 @@ from os.path import join, dirname
 from watson_developer_cloud import SpeechToTextV1
 
 import requests
-import json
+
 
 
 URI = 'mongodb://admin:qhacks2018@ds225078.mlab.com:25078/convodb'
@@ -91,16 +92,16 @@ def analyze_tone(text):
     except:
         return False
  
-def display_results(data, syl_min):
-    data_dict={}
-    data_dict["syl"]=syl_min
+def display_results(data, syl_sec):
+    array=[]
     data = json.loads(str(data))
     #print(data)
+    array.append(syl_sec)
     for i in data['document_tone']['tone_categories']:
 
         for j in i['tones']:
-            data_dict[j['tone_name']]=(str(round(j['score'],1)))
-    return data_dict
+            array.append({"tone_name":j['tone_name'],"score":(str(round(j['score'] * 100,1)))})
+    return array
 def analyze(data, sec):
     
     if len(data) >= 1:
@@ -116,10 +117,7 @@ def analyze(data, sec):
         if results != False:
             
             #display_results(results)
-            res= display_results(results, syl_sec)
-            
-            res['final']=(final_score(res))
-            return res
+            return display_results(results, syl_sec)
             #exit
         else:
             print("Something went wrong")
@@ -142,23 +140,8 @@ def syllables(word):
     if count == 0:
         count +=1
     return count
-    
-def final_score(res):
-	per_point=5
-	score=(1-abs((res['syl']/240)-1))*5*per_point
-	score+=per_point*(1-float(res['Sadness']))
-	score+=2*per_point*(1-float(res['Disgust']))
-	score+=2*per_point*(1-float(res['Tentative']))
-	score+=per_point*float(res['Joy'])
-	score+=per_point*float(res['Analytical'])
-	score+=3*per_point*float(res['Confident'])
-	score+=1*per_point*float(res['Conscientiousness'])
-	score+=1*per_point*float(res['Agreeableness'])
-	score+=2*per_point*float(res['Extraversion'])
-	score+=1*per_point*float(res['Emotional Range'])
 
-	return int(score)
-
+x=speech_to_text()
 
 async def get_dataText(request):
     print("we here bois")
