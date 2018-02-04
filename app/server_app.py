@@ -62,13 +62,13 @@ async def delete_from_database():
     db['Text'].delete_many({})
 
 
-def speech_to_text():
+def speech_to_text(path):
     speech_to_text = SpeechToTextV1(
     username = "4c20aefe-d09b-448d-a30a-f4fed6ef1bb8",
     password = "tvZZ6pF6ASrj",
     x_watson_learning_opt_out=False
 	)
-    with open(join(dirname(__file__), 'res/0001.wav'),
+    with open(join(dirname(__file__), path),
 	          'rb') as audio_file:
         json_text=((speech_to_text.recognize(
 	        audio_file, content_type='audio/wav', timestamps=True,
