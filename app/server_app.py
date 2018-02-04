@@ -31,8 +31,9 @@ async def handle(request):
 
 
 @sio.on('data')
-def print_data(sid, message):
-    print(message)
+def print_data(request):
+
+    print(request.data)
 
 app.router.add_get('/',handle)
 
