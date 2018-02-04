@@ -2,10 +2,11 @@ from __future__ import print_function
 import json
 from os.path import join, dirname
 from watson_developer_cloud import SpeechToTextV1
+import credentials
 
 speech_to_text = SpeechToTextV1(
-    username='392f6409-ab0b-4f59-ad8f-f58e8f7e0000',
-    password='hwCW7TRbuzbd',
+    username = credentials.login['username-speech'],
+    password = credentials.login['password-speech'],
     x_watson_learning_opt_out=False
 )
 
@@ -16,6 +17,6 @@ print(json.dumps(speech_to_text.get_model('en-US_BroadbandModel'), indent=2))
 with open(join(dirname(__file__), 'recordings/0001.wav'),
           'rb') as audio_file:
     print(json.dumps(speech_to_text.recognize(
-        audio_file, content_type='audio/wav', timestamps=True,
-        word_confidence=True),
+        audio_file, content_type='audio/wav', timestamps=False,
+        word_confidence=False),
                      indent=2))
