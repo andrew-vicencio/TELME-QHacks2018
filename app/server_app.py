@@ -1,6 +1,5 @@
 from aiohttp import web
 import socketio
-import pyaudio
 #import websocket
 
 
