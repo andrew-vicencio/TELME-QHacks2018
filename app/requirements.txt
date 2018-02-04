@@ -1,10 +1,14 @@
 aiohttp==2.3.10
 async-timeout==2.0.0
 chardet==3.0.4
+gevent==1.2.2
+greenlet==0.4.13
 idna==2.6
 idna-ssl==1.0.0
 multidict==4.1.0
+PyAudio==0.2.11
 python-engineio==2.0.2
 python-socketio==1.8.4
 six==1.11.0
+websocket==0.2.1
 yarl==1.1.0
