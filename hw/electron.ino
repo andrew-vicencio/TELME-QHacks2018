@@ -8,12 +8,14 @@
 #include "cellular_hal.h"
 #include "spk.h"
 
+#include "sample.h"
+
 STARTUP(cellular_credentials_set("isp.telus.com", "", "", NULL));
 
 // Audio Buffer Constants
-#define AB_SIZE 1024
-#define AB_SEND 50
-#define AB_BUFS 5
+#define AB_SIZE 2
+#define AB_SEND 2
+#define AB_BUFS 2
 
 #define SR 8000
 #define TI 100000
@@ -74,8 +76,17 @@ void loop() {
             break;
         case 3:
             digitalWrite(D7, HIGH);
-            T.begin(rec, 1000000 / SR, uSec);
-/*
+            //T.begin(rec, 1000000 / SR, uSec);
+            
+            byte buf[2048];
+            for(int i=0; i<315; i++) {
+                digitalWrite(D0, HIGH);
+                for(int j=0; j<2048 /*&& ((i<<11)+j)<sample_len*/; j++)
+                    buf[j] = sample[i];
+                cc.write(buf, 2048);
+                digitalWrite(D0, LOW);
+            }
+            /*
             for(int y = 0; y < AB_SEND; y++) {
                 digitalWrite(D0, HIGH);
                 for(int x = 0; x < AB_SIZE; x++) {
@@ -84,7 +95,8 @@ void loop() {
                 digitalWrite(D0, LOW);
                 cc.write(ab[(y++)%AB_BUFS], AB_SIZE);
             }
-*/
+            */
+            state = 4;
             ref = millis();
             state++;
             break;
@@ -104,7 +116,7 @@ void loop() {
             }
             break;
         case 5:
-            T.end();
+            //T.end();
             cc.stop();
             digitalWrite(D7, LOW);
             state = 0;
