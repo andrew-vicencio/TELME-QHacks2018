@@ -1,5 +1,0 @@
-{
-  "code": 401,
-  "error": "Not Authorized",
-  "description": "No credentials supplied."
-}
