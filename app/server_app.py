@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import json
 from bson.json_util import loads,dumps
 import aiohttp_jinja2
+import jinja2
 
 from os.path import join, dirname
 from watson_developer_cloud import SpeechToTextV1
@@ -30,6 +31,7 @@ RATE = 44100
 
 sio = socketio.AsyncServer(async_mode='aiohttp')
 app = web.Application()
+aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(''))
 sio.attach(app)
 
 
@@ -37,6 +39,7 @@ async def handle(request):
     await insert_to_database()
     result = await read_from_database()
     result = dumps(result)
+    print(result)
     #await delete_from_database()
     return web.Response(text=result)
     #return web.Response(text=json.dumps(result))
@@ -51,7 +54,6 @@ async def insert_to_database():
     textCollection = db['Text']
     sampleText = {"Brendan":"Is Sick"}
     textCollection.insert_one(sampleText)
-
 async def read_from_database():
     textCollection = db['Text']
     result = textCollection.find_one()
@@ -77,6 +79,8 @@ def speech_to_text(path):
     json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'],sec )
     print(json_analysis)
     #Send to server
+    db['Text'].insert_one(json_analysis)
+
 def analyze_tone(text):
     usern = '66f34122-cf4e-408f-ac88-743a2e60f699'
     passw = 'Cw2kWm8Cfku7'
@@ -115,7 +119,8 @@ def analyze(data, sec):
 
         results = analyze_tone(data)
         if results != False:
-            
+
+            db['Conversations'].insert_one(results)
             #display_results(results)
             return display_results(results, syl_sec)
             #exit
@@ -145,7 +150,7 @@ def syllables(word):
 async def get_dataText(request):
     print("we here bois")
     textCollection = db['Text']
-    result = await textCollection.find_one()
+    result = textCollection.find_one()
     result = dumps(result)
     print(result)
     return web.Response(text=result)
@@ -154,15 +159,18 @@ async def get_dataText(request):
 async def get_dataAnal(request):
     print("we here bois")
     analysisCollection = db['Analysis']
-    result = await analysisCollection.find_one()
+    result = analysisCollection.find_one()
     result = dumps(result)
     print(result)
     return web.Response(text=result)
 
 async def home(request):
     context ={}
-    response = aiohttp_jinja2.render_template("/website/home.html",request,context)
+    response = aiohttp_jinja2.render_template("/website/website.html",request,context)
     response.headers['Content-Language']='en'
+
+
+
     return response
 
 
@@ -178,4 +186,3 @@ app.router.add_get('/getDataAnalysis',get_dataAnal)
 
 if __name__ =='__main__':
     web.run_app(app)
-
