@@ -1,6 +1,6 @@
 import requests
 import json
-import credentials
+
  
 def analyze_tone(text):
     usern = '66f34122-cf4e-408f-ac88-743a2e60f699'
@@ -25,7 +25,7 @@ def display_results(data, syl_sec):
     for i in data['document_tone']['tone_categories']:
 
         for j in i['tones']:
-            array.append({"tone_name":j['tone_name'],"score":(str(round(j['score'] * 100,1)))})
+            array.append({j['tone_name']:(str(round(j['score'] * 100,1)))})
     return array
 def analyze(data, sec):
     #welcome()
