@@ -1,11 +1,9 @@
 from aiohttp import web
 import socketio
-import pyaudio
 #import websocket
 
 
 CHUNK = 1024
-FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 
@@ -33,10 +31,12 @@ async def handle(request):
 
 
 @sio.on('data')
-def print_data(sid, message):
-    print(message)
+def print_data(request):
+
+    print(request.data)
 
 app.router.add_get('/',handle)
 
-web.run_app(app, host='127.0.0.1', port=8080)
+if __name__ =='__main__':
+    web.run_app(app)
 
