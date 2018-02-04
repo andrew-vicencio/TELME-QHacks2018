@@ -18,13 +18,14 @@ speech_to_text = SpeechToTextV1(
 with open(join(dirname(__file__), 'recordings/0002.wav'),
           'rb') as audio_file:
     json_text=((speech_to_text.recognize(
-        audio_file, content_type='audio/wav', timestamps=False,
+        audio_file, content_type='audio/wav', timestamps=True,
         word_confidence=False)))
-    print(json_text['results'][0]['alternatives'][0]['transcript'])
+    sec=int(json_text['results'][0]['alternatives'][0]['timestamps'][-1][2])
+    #print(json_text['results'][0]['alternatives'][0]['transcript'])
     
   	#Provide json to mongo database
 #json_analysis=analyze(json_text)
-json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'])
+json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'],sec )
 print(json_analysis)
 
 
