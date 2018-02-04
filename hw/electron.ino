@@ -2,6 +2,7 @@
  *
  * Audio Reference:
  * from https://github.com/rickkas7/photonAudioSample1/
+ * Which didn't work for us...
  */
  
 #include "Particle.h"
