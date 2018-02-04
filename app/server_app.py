@@ -142,6 +142,7 @@ def syllables(word):
     if count == 0:
         count +=1
     return count
+    
 def final_score(res):
 	per_point=5
 	score=(1-abs((res['syl']/240)-1))*5*per_point
@@ -156,12 +157,8 @@ def final_score(res):
 	score+=2*per_point*float(res['Extraversion'])
 	score+=1*per_point*float(res['Emotional Range'])
 
+	return int(score)
 
-
-
-	return floor(score)
-
-x=speech_to_text()
 
 async def get_dataText(request):
     textCollection = db['Text']
@@ -190,7 +187,8 @@ def print_data(request):
     print(request.data)
 
 app.router.add_get('/',handle)
-app.router.add_get('/getData',get_data)
+app.router.add_get('/getDataText',get_dataText)
+app.router.add_get('/getDataAnalysis',get_dataAnal)
 
 if __name__ =='__main__':
     web.run_app(app)
