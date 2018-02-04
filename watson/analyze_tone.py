@@ -30,16 +30,14 @@ def welcome():
     print("Have fun!\n")
  
 def display_results(data):
+    array=[]
     data = json.loads(str(data))
-    print(data)
+    #print(data)
     for i in data['document_tone']['tone_categories']:
-        print(i['category_name'])
-        print("-" * len(i['category_name']))
+
         for j in i['tones']:
-            print(j['tone_name'].ljust(20),(str(round(j['score'] * 100,1)) + "%").rjust(10))
-        print()
-    print()
- 
+            array.append({"tone_name":j['tone_name'],"score":(str(round(j['score'] * 100,1)))})
+    return array
 def analyze(data):
     #welcome()
      
@@ -49,9 +47,12 @@ def analyze(data):
             exit
         results = analyze_tone(data)
         if results != False:
-            display_results(results)
-            exit
+            
+            #display_results(results)
+            return display_results(results)
+            #exit
         else:
             print("Something went wrong")
     else: print("No data was recieved")
+    #return
 #main()
