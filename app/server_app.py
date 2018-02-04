@@ -141,7 +141,6 @@ def syllables(word):
         count +=1
     return count
 
-x=speech_to_text()
 
 async def get_dataText(request):
     print("we here bois")
