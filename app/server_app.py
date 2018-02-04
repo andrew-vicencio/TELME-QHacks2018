@@ -4,6 +4,7 @@ import socketio
 from pymongo import MongoClient
 import json
 from bson.json_util import loads,dumps
+import aiohttp_jinja2
 
 
 
@@ -39,7 +40,7 @@ async def handle(request):
     await insert_to_database()
     result = await read_from_database()
     result = dumps(result)
-    await delete_from_database()
+    #await delete_from_database()
     return web.Response(text=result)
     #return web.Response(text=json.dumps(result))
 
@@ -63,21 +64,22 @@ async def read_from_database():
 async def delete_from_database():
     db['Text'].delete_many({})
 
+
 def speech_to_text():
-	speech_to_text = SpeechToTextV1(
+    speech_to_text = SpeechToTextV1(
     username = "4c20aefe-d09b-448d-a30a-f4fed6ef1bb8",
     password = "tvZZ6pF6ASrj",
     x_watson_learning_opt_out=False
 	)
-	with open(join(dirname(__file__), 'res/0001.wav'),
+    with open(join(dirname(__file__), 'res/0001.wav'),
 	          'rb') as audio_file:
-	    json_text=((speech_to_text.recognize(
+        json_text=((speech_to_text.recognize(
 	        audio_file, content_type='audio/wav', timestamps=True,
 	        word_confidence=False)))
-	    sec=int(json_text['results'][0]['alternatives'][0]['timestamps'][-1][2])
-	json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'],sec )
-	print(json_analysis)
-	#Send to server
+        sec=int(json_text['results'][0]['alternatives'][0]['timestamps'][-1][2])
+    json_analysis=analyze(json_text['results'][0]['alternatives'][0]['transcript'],sec )
+    print(json_analysis)
+    #Send to server
 def analyze_tone(text):
     usern = '66f34122-cf4e-408f-ac88-743a2e60f699'
     passw = 'Cw2kWm8Cfku7'
@@ -143,12 +145,35 @@ def syllables(word):
     return count
 
 x=speech_to_text()
-@sio.on('data')
+
+async def get_dataText(request):
+    textCollection = db['Text']
+    result = textCollection.find_one()
+    result = dumps(result)
+    return web.Response(text=result)
+
+
+async def get_dataAnal(request):
+    analysisCollection = db['Analysis']
+    result = analysisCollection.find_one()
+    result = dumps(result)
+    return web.Response(text=result)
+
+async def home(request):
+    context ={}
+    response = aiohttp_jinja2.render_template("home.html",request,context)
+    response.headers['Content-Language']='en'
+    return response
+
+
+
+@sio.on('dataStream')
 def print_data(request):
 
     print(request.data)
 
 app.router.add_get('/',handle)
+app.router.add_get('/getData',get_data)
 
 if __name__ =='__main__':
     web.run_app(app)
