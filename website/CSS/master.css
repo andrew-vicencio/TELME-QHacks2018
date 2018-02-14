@@ -14,14 +14,6 @@ body {
   width: 100%;
 }
 
-#transcript {
-  background-color: white;
-  width: 1082px;
-  height: 500px;
-  padding: 0 auto;
-  margin: auto;
-}
-
 .bg-green {
   background-color: #065201;
 }

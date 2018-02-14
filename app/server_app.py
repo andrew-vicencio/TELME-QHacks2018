@@ -107,7 +107,7 @@ def display_results(data, syl_min):
     return data_dict
 
 def analyze(data, sec):
-    
+
     if len(data) >= 1:
         if data == 'q'.lower():
             exit
@@ -127,9 +127,9 @@ def analyze(data, sec):
 
 
             res= display_results(results, syl_sec)
-            
+
             res['Final']=(final_score(res))
-            return res		
+            return res
 
             #exit
         else:
@@ -153,7 +153,7 @@ def syllables(word):
     if count == 0:
         count +=1
     return count
-    
+
 def final_score(res):
 	per_point=5
 	score=(1-abs((res['syl']/240)-1))*5*per_point
@@ -190,7 +190,7 @@ async def get_dataAnal(request):
 
 async def home(request):
     context ={}
-    response = aiohttp_jinja2.render_template("/website/website.html",request,context)
+    response = aiohttp_jinja2.render_template("/website/index.html",request,context)
     response.headers['Content-Language']='en'
 
 
@@ -211,6 +211,8 @@ app.router.add_get('/',home)
 app.router.add_get('/getDataText',get_dataText)
 app.router.add_get('/getDataAnalysis',get_dataAnal)
 app.router.add_get('/testRoute',testRoute)
+
+app.router.add_static('/static', path='./website/', name='static')
 
 if __name__ =='__main__':
     web.run_app(app)

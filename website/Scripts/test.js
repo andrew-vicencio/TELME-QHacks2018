@@ -3,24 +3,22 @@ $(document).ready( function(){
   var serverURL = "http://http://localhost:8080/";
   var mlabURL = "https://api.mlab.com/api/1";
   var getURL = "/databases/convodb/collections";
-  var textURL = "/getDataText/";
-  var AnalysisURL = "/getDataAnalysis/";
+  var textURL = "/getDataText";
+  var AnalysisURL = "/getDataAnalysis";
 
   var text;
   var analysis;
-  var key;
-  var val;
   $.ajax ( serverURL, {
     type: "GET",
     async: true,
     success: function(data){
       text = data;
-      console.log("YES");
+      console.log("FUCK YES");
       console.log(data);
     },
     error: function(xhr, status, error){
-      console.log("OFF");
-      var err = eval("(" + xhr.responseText + ")");
+      console.log("FUCK OFF");
+      err = eval("(" + xhr.responseText + ")");
       alert(err.Message);
     },
     complete: function(){
@@ -28,11 +26,6 @@ $(document).ready( function(){
     }
   });
 });
-
-if(text != null){
-  var tscript = document.querySelector(".transcript");
-  tscript.textContent = text;
-}
 
   /*$.ajax( mlabURL+getURL+textURL,
           {type: "GET",
