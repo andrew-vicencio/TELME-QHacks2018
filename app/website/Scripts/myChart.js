@@ -1,4 +1,4 @@
-import * from '../node_module/chart.js/src/chart.js';
+console.log("Chart Connected.");
 
 var ctx = document.getElementById("myChart");
 var myChart = new Chart(ctx, {
@@ -20,3 +20,5 @@ var myChart = new Chart(ctx, {
     }
   }
 });
+
+console.log("Chart");

@@ -12,12 +12,4 @@ var xhr = $.get({
   }
 });
 
-console.log("Status:");
-console.log(xhr.status);
-console.log("Status Text:");
-console.log(xhr.statusText);
-console.log("Response Header:");
-console.log(xhr.getAllResponseHeaders());
-console.log("Response Text:");
-console.log(xhr.responseText);
 console.log(xhr);

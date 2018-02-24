@@ -9,3 +9,5 @@ app/.venv/
 watson/.venv/
 watson/credentials.py
 .idea/
+Scripts/
+pyvenv.cfg
