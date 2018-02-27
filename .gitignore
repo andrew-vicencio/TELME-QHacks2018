@@ -11,3 +11,6 @@ watson/credentials.py
 .idea/
 Scripts/
 pyvenv.cfg
+*.swp
+lib64
+share/
